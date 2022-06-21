@@ -1,5 +1,3 @@
-import java.io.FileWriter
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -55,6 +53,8 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    //need to apply in application module
     packagingOptions {
        // resources.excludes.addAll(arrayOf("xsd/*", "license/*"))
         // resources.pickFirsts.addAll(arrayOf("kotlin/**","META-INF/**"))
@@ -65,14 +65,15 @@ android {
         }
         resources.merges.add("META-INF/**")
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
 
-}
 
+}
 
 fun isBuildForAndroid(): Boolean {
     val taskNames = project
@@ -82,6 +83,7 @@ fun isBuildForAndroid(): Boolean {
 
     return taskNames.any { it.indexOf("assemble") != -1 || it.indexOf("clean") != -1 }
 }
+
 
 dependencies {
 //implementation(project(":build-core"))
@@ -93,7 +95,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
-    implementation(project(":core"))
+   /* implementation(project(":core"))
     implementation(project(":base-services-groovy"))
     implementation(project(":launcher"))
     implementation(project(":model-core"))
@@ -101,9 +103,12 @@ dependencies {
     implementation(project(":core-api"))
     implementation(project(":configuration-cache"))
     implementation(project(":base-services"))
+*/
+
+    implementation(project(":gradle-support"))
 
     implementation(project(":terminal-view"))
-    runtimeOnly("net.rubygrapefruit:file-events-linux-aarch64:0.22-milestone-23")
+    /*runtimeOnly("net.rubygrapefruit:file-events-linux-aarch64:0.22-milestone-23")*/
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 

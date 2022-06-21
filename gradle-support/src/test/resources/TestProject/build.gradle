@@ -1,0 +1,21 @@
+plugins {
+    id "TestPlugin"
+}
+
+/*
+tasks.register("testTask2") {
+    it.doLast {
+        println("Executing TestTask2")
+    }
+    println("Config TestTask2")
+    it.doFirst {
+        println("Executing doFirst!")
+    }
+}
+
+tasks.register("testTask") {
+    it.dependsOn("testTask2")
+    it.doFirst {
+        println("Executing doFirst2!")
+    }
+}*/

@@ -10,6 +10,7 @@ pluginManagement {
         maven("https://repo.gradle.org/gradle/libs-releases")
 
     }
+
 }
 
 dependencyResolutionManagement {
@@ -26,9 +27,10 @@ dependencyResolutionManagement {
         maven("https://repo.gradle.org/gradle/libs-releases")
         maven("https://maven.repository.redhat.com/ga/")
     }
+
 }
 
-include(":app", ":terminal-view", ":virtual-process")
+include(":app", ":terminal-view", ":virtual-process",":gradle-support")
 
 rootProject.name = "MyLuaApp-Build-Core"
 
@@ -40,7 +42,5 @@ file("subprojects")
         project(":${dir.name}")
             .projectDir = dir
     }
-
-
 
 
