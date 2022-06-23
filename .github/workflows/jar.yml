@@ -16,10 +16,10 @@ jobs:
     - name: Running gradle assembleRelease
       run: gradle :gradle-support:assembleDebug
 
-    - name: Uploading Jar Libraries
+    - name: Uploading Aar Libraries
       uses: actions/upload-artifact@v2
       with:
         name: gradle-support
         path: |
-          gradle-support/build/outputs/aar/gradle-support/debug-re-bundle.aar
+          gradle-support/build/outputs/aar/gradle-support/gradle-support-debug-re-bundle.aar
     
