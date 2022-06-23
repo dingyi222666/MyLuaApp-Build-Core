@@ -1,8 +1,8 @@
-name: Upload Jar-Libraries
+name: Upload Gadle Support Library
 on: workflow_dispatch
 jobs:
   build:
-    name: assemble Libraries
+    name: Build Gadle Support Library
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -14,14 +14,12 @@ jobs:
         cache: gradle
     
     - name: Running gradle assembleRelease
-      run: gradle assembleDebug
+      run: gradle :gradle-support:assembleDebug
 
     - name: Uploading Jar Libraries
       uses: actions/upload-artifact@v2
       with:
-        name: Jar-Libraries
+        name: gradle-support
         path: |
-           subprojects
-           terminal-view
-           virtual-process
+          gradle-support/build/outputs/aar/gradle-support/debug-re-bundle.aar
     

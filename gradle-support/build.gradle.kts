@@ -1,7 +1,6 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("com.kezong.fat-aar")
 }
 
 
@@ -45,6 +44,26 @@ android {
 }
 
 
+
+dependencies {
+
+    testImplementation("junit:junit:4.13.2")
+
+    implementation(project(":core"))
+    implementation(project(":base-services-groovy"))
+    implementation(project(":launcher"))
+    implementation(project(":model-core"))
+    implementation(project(":logging"))
+    implementation(project(":core-api"))
+    implementation(project(":configuration-cache"))
+    implementation(project(":base-services"))
+
+    implementation(project(":virtual-process"))
+    runtimeOnly("net.rubygrapefruit:file-events-linux-aarch64:0.22-milestone-23")
+
+    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+}
+
 fun isBuildForAndroid(): Boolean {
     val taskNames = project
         .gradle
@@ -54,23 +73,85 @@ fun isBuildForAndroid(): Boolean {
     return taskNames.any { it.indexOf("assemble") != -1 || it.indexOf("clean") != -1 }
 }
 
+fun getAllProjectDependency(): Set<Project> {
+    val result = mutableSetOf<Project>()
 
+    val subProject = rootProject.file("subprojects")
 
-dependencies {
+    subProject.listFiles()?.filter {
+        it.name != "android-stubs"
+    }?.forEach {
+        result.add(project(":${it.name}"))
+    }
 
-    testImplementation("junit:junit:4.13.2")
-
-    add("embed", project(":core"))
-    add("embed", project(":base-services-groovy"))
-    add("embed", project(":launcher"))
-    add("embed", project(":model-core"))
-    add("embed",project(":logging"))
-    add("embed",project(":core-api"))
-    add("embed",project(":configuration-cache"))
-    add("embed",project(":base-services"))
-
-    implementation(project(":virtual-process"))
-    runtimeOnly("net.rubygrapefruit:file-events-linux-aarch64:0.22-milestone-23")
-
-    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    return result
 }
+
+
+project.afterEvaluate {
+    android.libraryVariants
+        .forEach { variant ->
+
+            //capitalize (debug) -> (Debug)
+            val variantsName = variant.name.capitalize()
+
+            val variantsOutput = tasks.getByName("bundle${variantsName}Aar")
+                .outputs.files.first()
+
+            val unpackAarTask = tasks.create("unpack${variantsName}Aar", Copy::class.java)
+
+            val copyDependencyBuildJarToAarLibsTask =
+                tasks.create("copyDependency${variantsName}BuildJarToAarLibs", Copy::class.java) {
+                    doLast {
+
+                    }
+                    dependsOn(unpackAarTask)
+                }
+
+            val reBundleAarTask = tasks.create("reBundle${variantsName}Aar", Zip::class.java) {
+                doLast {
+                    //increment
+                    //delete("build/tmp/unpack")
+                }
+                dependsOn(copyDependencyBuildJarToAarLibsTask)
+            }
+
+
+            getAllProjectDependency()
+                .filter { it.plugins.hasPlugin("java-library") }
+                .map {
+                    it.tasks.getByName("jar").outputs.files.files.first()
+                }.forEach {
+                    copyDependencyBuildJarToAarLibsTask.from(it)
+                }
+
+            copyDependencyBuildJarToAarLibsTask.into(
+                "build/tmp/unpack-${variantsName}/libs"
+            )
+
+
+            /*unpackDebugAarTask.inputs.file(variantsOutput)
+            unpackDebugAarTask.outputs.files(
+                "build/tmp/unpack"
+            )*/
+
+
+            unpackAarTask.from(zipTree(variantsOutput))
+            unpackAarTask.into("build/tmp/unpack-${variantsName}")
+
+
+            reBundleAarTask.from("build/tmp/unpack-${variantsName}")
+            reBundleAarTask.destinationDirectory.set(File("build/outputs/aar"))
+            reBundleAarTask.archiveFileName
+                .convention(variantsOutput.name.replace(".aar", "-re-bundle.aar"))
+                .set(variantsOutput.name.replace(".aar", "-re-bundle.aar"))
+
+
+            tasks.getByName("assemble${variantsName}")
+                .dependsOn(reBundleAarTask)
+
+            unpackAarTask.mustRunAfter(tasks.getByName("bundle${variantsName}Aar"))
+        }
+}
+
+
