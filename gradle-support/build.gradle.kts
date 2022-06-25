@@ -102,17 +102,10 @@ project.afterEvaluate {
 
             val copyDependencyBuildJarToAarLibsTask =
                 tasks.create("copyDependency${variantsName}BuildJarToAarLibs", Copy::class.java) {
-                    doLast {
-
-                    }
                     dependsOn(unpackAarTask)
                 }
 
             val reBundleAarTask = tasks.create("reBundle${variantsName}Aar", Zip::class.java) {
-                doLast {
-                    //increment
-                    //delete("build/tmp/unpack")
-                }
                 dependsOn(copyDependencyBuildJarToAarLibsTask)
             }
 

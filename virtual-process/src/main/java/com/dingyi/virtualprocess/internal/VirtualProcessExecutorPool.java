@@ -1,37 +1,36 @@
-package com.dingyi.terminal.virtualprocess;
+package com.dingyi.virtualprocess.internal;
+
+import com.dingyi.virtualprocess.VirtualProcessExecutor;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class VirtualExecutableExecutorPool {
+public class VirtualProcessExecutorPool {
 
-    private VirtualExecutableExecutorPool() {
+    private static VirtualProcessExecutorPool instance;
+
+    private VirtualProcessExecutorPool() {
     }
 
-    public static VirtualExecutableExecutorPool getInstance() {
-        synchronized (VirtualExecutableExecutorPool.class) {
-            if (INSTANCE == null) {
-                INSTANCE = new VirtualExecutableExecutorPool();
+    public synchronized static VirtualProcessExecutorPool getInstance() {
+        synchronized (VirtualProcessExecutorPool.class) {
+            if (instance == null) {
+                instance = new VirtualProcessExecutorPool();
             }
+
         }
-        return INSTANCE;
+        return instance;
     }
 
-
-    private static VirtualExecutableExecutorPool INSTANCE;
 
     private AtomicInteger threadAtomic;
 
 
-
     private Timer checkExecutorPoolTimer;
-
-
 
     private ExecutorService executorPool;
 
@@ -43,11 +42,6 @@ public class VirtualExecutableExecutorPool {
 
     }
 
-
-    public void waitFor() throws InterruptedException {
-        executorPool.shutdown();
-        executorPool.awaitTermination(1, TimeUnit.HOURS);
-    }
 
     boolean canCloseExecutorPool() {
         return threadAtomic.get() >= ((ThreadPoolExecutor) executorPool).getPoolSize();
@@ -62,11 +56,11 @@ public class VirtualExecutableExecutorPool {
         threadAtomic.set(0);
     }
 
-    synchronized void execBinaryExecutor(VirtualExecutableExecutor binaryExecutor) {
+    public synchronized void execExecutor(VirtualProcessExecutor executor) {
         if (executorPool == null) {
             createExecutorPool();
         }
-        executorPool.submit(binaryExecutor);
+        executorPool.submit(executor);
         if (threadAtomic.get() == 0) {
             checkExecutorPoolTimer.schedule(new TimerTask() {
                 @Override
@@ -79,5 +73,4 @@ public class VirtualExecutableExecutorPool {
         }
         threadAtomic.incrementAndGet();
     }
-
 }

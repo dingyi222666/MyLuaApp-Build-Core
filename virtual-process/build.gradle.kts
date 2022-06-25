@@ -9,4 +9,5 @@ java {
 
 dependencies {
     compileOnly(project(":android-stubs"))
+    testImplementation("junit:junit:4.13.2")
 }
