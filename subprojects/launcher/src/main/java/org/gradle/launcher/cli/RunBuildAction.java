@@ -60,6 +60,8 @@ public class RunBuildAction implements Runnable {
                 new DefaultBuildRequestContext(new DefaultBuildRequestMetaData(clientMetaData, startTime, sharedServices.get(ConsoleDetector.class).isConsoleInput()), new DefaultBuildCancellationToken(), new NoOpBuildEventConsumer())
             );
             if (result.hasFailure()) {
+                // dingyi modify:
+                // This exception does not need to be deserialized, because gradle is always running on the same jvm
                 // Don't need to unpack the serialized failure. It will already have been reported and is not used by anything downstream of this action.
                 throw new ReportedException();
             }

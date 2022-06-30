@@ -27,6 +27,7 @@ import org.gradle.internal.logging.events.UpdateNowEvent;
 import org.gradle.internal.nativeintegration.console.ConsoleMetaData;
 import org.gradle.internal.operations.BuildOperationCategory;
 import org.gradle.internal.operations.OperationIdentifier;
+import org.gradle.internal.os.OperatingSystem;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -73,7 +74,8 @@ public class BuildStatusRenderer implements OutputEventListener {
         if (event instanceof ProgressStartEvent) {
             ProgressStartEvent startEvent = (ProgressStartEvent) event;
             if (startEvent.isBuildOperationStart()) {
-                if (buildStartTimestamp == 0 && startEvent.getParentProgressOperationId() == null) {
+                //dingyi break change modify: use event buildStartTimestamp
+                if (buildStartTimestamp == 0 && (OperatingSystem.current().isAndroid() || startEvent.getParentProgressOperationId() == null)) {
                     // The very first event starts the Initializing phase
                     // TODO - should use BuildRequestMetaData to determine the build start time
                     buildStartTimestamp = startEvent.getTimestamp();
