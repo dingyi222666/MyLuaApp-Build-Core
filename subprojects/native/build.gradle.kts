@@ -28,6 +28,6 @@ dependencies {
     implementation("net.rubygrapefruit:file-events:0.22-milestone-23")
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.slf4j:slf4j-api:1.7.36")
-    implementation("org.fusesource.jansi:jansi:2.3.4")
+    implementation("org.fusesource.jansi:jansi:2.4.0")
 
 }

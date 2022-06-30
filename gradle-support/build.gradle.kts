@@ -49,16 +49,16 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
 
-    implementation(project(":core"))
-    implementation(project(":base-services-groovy"))
-    implementation(project(":launcher"))
-    implementation(project(":model-core"))
-    implementation(project(":logging"))
-    implementation(project(":core-api"))
-    implementation(project(":configuration-cache"))
-    implementation(project(":base-services"))
+    api(project(":core"))
+    api(project(":base-services-groovy"))
+    api(project(":launcher"))
+    api(project(":model-core"))
+    api(project(":logging"))
+    api(project(":core-api"))
+    api(project(":configuration-cache"))
+    api(project(":base-services"))
 
-    implementation(project(":virtual-process"))
+    api(project(":virtual-process"))
     runtimeOnly("net.rubygrapefruit:file-events-linux-aarch64:0.22-milestone-23")
 
     api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

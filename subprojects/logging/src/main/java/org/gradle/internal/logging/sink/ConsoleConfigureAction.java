@@ -99,7 +99,7 @@ public class ConsoleConfigureAction {
 
     private static Console consoleFor(OutputStream stdout, ConsoleMetaData consoleMetaData, ColorMap colourMap) {
         boolean force = !consoleMetaData.isWrapStreams();
-        OutputStreamWriter outStr = new OutputStreamWriter(/*force ?:*/ stdout /*: AnsiConsoleUtil.wrapOutputStream(stdout)*/);
+        OutputStreamWriter outStr = new OutputStreamWriter(force ? stdout : AnsiConsoleUtil.wrapOutputStream(stdout));
         return new AnsiConsole(outStr, outStr, colourMap, consoleMetaData, force);
     }
 }

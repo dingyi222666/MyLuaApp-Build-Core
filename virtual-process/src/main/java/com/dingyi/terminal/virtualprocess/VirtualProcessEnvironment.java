@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class VirtualProcessEnvironment {
@@ -17,6 +18,7 @@ public class VirtualProcessEnvironment {
 
     OutputStream processErrorStream;
 
+    CountDownLatch processStartLatch = new CountDownLatch(1);
 
     SimpleTermiosSupport termiosSupport;
 
@@ -30,7 +32,6 @@ public class VirtualProcessEnvironment {
 
     Integer exitValue = null;
 
-    private ByteArrayBuffer readBuffer = new ByteArrayBuffer(1024);
 
     public VirtualProcessEnvironment(InputStream processInputStream, OutputStream processOutputStream, OutputStream processErrorStream) {
         this.processInputStream = processInputStream;
@@ -41,6 +42,7 @@ public class VirtualProcessEnvironment {
 
         this.processOutputStream = processOutputStream;
         this.processErrorStream = processErrorStream;
+
 
     }
 
@@ -161,22 +163,7 @@ public class VirtualProcessEnvironment {
         flush();
     }
 
-    public String readLine() throws IOException {
 
-        while (true) {
-            int b = processInputStream.read();
-            if (b == -1) {
-                return null;
-            }
-            if (b == '\n') {
-                break;
-            }
-            readBuffer.append((byte) b);
-        }
-        String line = new String(readBuffer.toByteArray());
-        readBuffer.clear();
-        return line;
-    }
 
 
     public void flush() throws IOException {
@@ -191,6 +178,7 @@ public class VirtualProcessEnvironment {
      * @param value
      */
     void exit(int value) {
+        processStartLatch.countDown();
         exitValue = value;
     }
 

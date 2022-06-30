@@ -18,12 +18,20 @@ package org.gradle.internal.logging.sink;
 
 import org.apache.commons.io.output.ProxyOutputStream;
 
+import org.fusesource.jansi.AnsiColors;
+import org.fusesource.jansi.AnsiMode;
+import org.fusesource.jansi.AnsiType;
 import org.fusesource.jansi.io.AnsiOutputStream;
+import org.fusesource.jansi.io.AnsiProcessor;
+import org.fusesource.jansi.io.ColorsAnsiProcessor;
+import org.gradle.internal.nativeintegration.console.ConsoleMetaData;
+import org.gradle.internal.nativeintegration.services.NativeServices;
 import org.gradle.internal.os.OperatingSystem;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 
 import static org.fusesource.jansi.internal.CLibrary.STDOUT_FILENO;
 import static org.fusesource.jansi.internal.CLibrary.isatty;
@@ -32,13 +40,11 @@ import static org.fusesource.jansi.internal.Kernel32.GetStdHandle;
 import static org.fusesource.jansi.internal.Kernel32.INVALID_HANDLE_VALUE;
 import static org.fusesource.jansi.internal.Kernel32.STD_OUTPUT_HANDLE;
 import static org.fusesource.jansi.internal.Kernel32.SetConsoleMode;
-/*
 
-*/
 /**
  * @see <a href="https://github.com/gradle/gradle/issues/882">Original issue (gradle/gradle#882)</a>
  * @see <a href="https://github.com/fusesource/jansi/issues/69">Issue in 3rd party library (fusesource/jansi#69)</a>
- *//*
+ */
 
 final class AnsiConsoleUtil {
     private static final int ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
@@ -54,10 +60,10 @@ final class AnsiConsoleUtil {
     private AnsiConsoleUtil() {
     }
 
-    */
-/**
+
+    /**
      * @see <a href="https://github.com/fusesource/jansi/blob/eeda18cb05122abe48b284dca969e2c060a0c009/jansi/src/main/java/org/fusesource/jansi/AnsiConsole.java#L48-L54">Method copied over from AnsiConsole.wrapOutputStream</a>
-     *//*
+     */
 
     static OutputStream wrapOutputStream(final OutputStream stream) {
         try {
@@ -67,10 +73,10 @@ final class AnsiConsoleUtil {
         }
     }
 
-    */
-/**
+
+    /**
      * @see <a href="https://github.com/fusesource/jansi/blob/eeda18cb05122abe48b284dca969e2c060a0c009/jansi/src/main/java/org/fusesource/jansi/AnsiConsole.java#L64-L119">Method copied over from AnsiConsole.wrapOutputStream</a>
-     *//*
+     */
 
     private static OutputStream wrapOutputStream(final OutputStream stream, int fileno) {
 
@@ -83,7 +89,7 @@ final class AnsiConsoleUtil {
         // If the jansi.strip property is set, then we just strip the
         // the ansi escapes.
         if (Boolean.getBoolean("jansi.strip")) {
-            return new AnsiOutputStream(stream);
+            /*  return new AnsiOutputStream(stream);*/
         }
 
         if (OperatingSystem.current().isWindows() && !IS_MINGW_XTERM) {
@@ -106,18 +112,18 @@ final class AnsiConsoleUtil {
                 };
             }
 
-           */
-/* // On windows we know the console does not interpret ANSI codes..
+
+            // On windows we know the console does not interpret ANSI codes..
             try {
-                return new WindowsAnsiPrintStream(new PrintStream(stream));
+                /* return new WindowsAnsiPrintStream(new PrintStream(stream));*/
             } catch (Throwable ignore) {
                 // this happens when JNA is not in the path.. or
                 // this happens when the stdout is being redirected to a file.
-            }*//*
+            }
 
 
             // Use the ANSIOutputStream to strip out the ANSI escape sequences.
-            return new AnsiOutputStream(stream);
+            /*return new AnsiOutputStream(stream);*/
         }
 
         // We must be on some Unix variant, including MSYS(2) on Windows...
@@ -127,9 +133,19 @@ final class AnsiConsoleUtil {
             boolean forceColored = Boolean.getBoolean("jansi.force");
             // If we can detect that stdout is not a tty.. then setup
             // to strip the ANSI sequences..
-            if (!IS_XTERM && !forceColored && isatty(fileno) == 0) {
+           /* if (!IS_XTERM && !forceColored && isatty(fileno) == 0) {
                 return new AnsiOutputStream(stream);
-            }
+            }*/
+            return new AnsiOutputStream(stream,
+                    () -> NativeServices.getInstance()
+                            .get(ConsoleMetaData.class).getCols(), AnsiMode.Default,
+                    new ColorsAnsiProcessor(stream, AnsiColors.TrueColor),
+                    AnsiType.VirtualTerminal,
+                    AnsiColors.TrueColor,
+                    Charset.defaultCharset(),
+                    () -> {
+                    }, () -> {
+            }, true);
         } catch (Throwable ignore) {
             // These errors happen if the JNI lib is not available for your platform.
             // But since we are on ANSI friendly platform, assume the user is on the console.
@@ -150,4 +166,4 @@ final class AnsiConsoleUtil {
 
 }
 
-*/
+

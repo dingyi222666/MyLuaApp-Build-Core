@@ -1294,6 +1294,8 @@ public final class TerminalEmulator {
             }
             setCursorRow(newCursorRow);
         }
+        //dingyi modify: set cursor column to zero
+        setCursorCol(0);
     }
 
     private void continueSequence(int state) {

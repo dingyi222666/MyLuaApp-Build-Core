@@ -1,5 +1,6 @@
 package com.dingyi.gradle.shell
 
+import android.app.Application
 import com.dingyi.groovy.android.AppDataDirGuesser
 import com.dingyi.terminal.virtualprocess.VirtualExecutable
 import com.dingyi.terminal.virtualprocess.VirtualProcessEnvironment
@@ -12,6 +13,16 @@ import java.io.File
 import java.io.PipedInputStream
 
 class GradleSupport(processChannel: VirtualProcessEnvironment) : VirtualExecutable(processChannel) {
+
+    private fun getCurrentApplication(): Application {
+        val applicationThread = Class.forName("android.app.ActivityThread")
+        val currentActivityThread = applicationThread.getMethod("currentActivityThread")
+        val currentActivityThreadObj = currentActivityThread.invoke(null)
+        val application =
+            applicationThread.getMethod("getApplication").invoke(currentActivityThreadObj)
+        return application as Application
+    }
+
     override fun start(args: Array<out String>): Int {
 
         val projectPath =
@@ -24,15 +35,15 @@ class GradleSupport(processChannel: VirtualProcessEnvironment) : VirtualExecutab
                 /* setConfigurationCache(BuildOption.Value.value(true));
                  startParameter.setConfigurationCacheDebug(true);*/
                 it.isParallelProjectExecutionEnabled = true;
-                it.warningMode = WarningMode.Fail;
-                it.consoleOutput = ConsoleOutput.Rich
-                it.logLevel = LogLevel.LIFECYCLE;
+                it.warningMode = WarningMode.All;
+                it.consoleOutput = ConsoleOutput.Verbose
+                it.logLevel = LogLevel.INFO;
                 it.isBuildCacheEnabled = true
                 it.isBuildCacheDebugLogging = true
                 it.projectDir = projectPath
                 it.currentDir = projectPath
-                it.gradleUserHomeDir = projectPath.resolve(".gradle_home")
-                it.projectCacheDir = projectPath.resolve(".gradle")
+                it.gradleUserHomeDir = getCurrentApplication().cacheDir.resolve(".gradle")
+                /* it.projectCacheDir = projectPath.resolve(".gradle")*/
                 it.isRefreshDependencies = true
             }
 

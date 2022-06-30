@@ -53,16 +53,6 @@ public class VirtualProcessService {
         new Thread("VirtualProcess-Listener") {
             @Override
             public void run() {
-              /*  while (true) {
-                    if (!process.isStart) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                }*/
                 try {
                     process.waitFor();
                 } catch (InterruptedException e) {
@@ -70,7 +60,6 @@ public class VirtualProcessService {
                 }
                 remove(process);
             }
-
             void remove(VirtualProcess process) {
                 mProcesses.remove(process.getProcessId());
             }

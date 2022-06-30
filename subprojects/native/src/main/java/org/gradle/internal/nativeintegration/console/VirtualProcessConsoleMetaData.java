@@ -13,12 +13,12 @@ public class VirtualProcessConsoleMetaData implements  ConsoleMetaData {
 
     @Override
     public boolean isStdOut() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isStdErr() {
-        return false;
+        return true;
     }
 
     @Override
@@ -33,6 +33,6 @@ public class VirtualProcessConsoleMetaData implements  ConsoleMetaData {
 
     @Override
     public boolean isWrapStreams() {
-        return false;
+        return true;
     }
 }

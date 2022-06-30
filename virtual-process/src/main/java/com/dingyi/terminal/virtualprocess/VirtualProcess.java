@@ -21,6 +21,7 @@ public class VirtualProcess {
 
     boolean isStart = false;
 
+
     private VirtualProcessEnvironment processChannel;
 
     private VirtualExecutableExecutor binaryExecutor;
@@ -34,6 +35,7 @@ public class VirtualProcess {
         this.cwd = cwd;
         this.args = args;
         parseEnv(envVars);
+        processChannel = new VirtualProcessEnvironment();
     }
 
     VirtualProcess(String cmd) {
@@ -92,10 +94,7 @@ public class VirtualProcess {
     }
 
     public void waitFor() throws InterruptedException {
-        while (binaryExecutor == null && !isStart) {
-            Thread.sleep(1000);
-        }
-        binaryExecutor.latch.await();
+        processChannel.processStartLatch.await();
     }
 
     public void destroy() throws IOException {
@@ -121,10 +120,9 @@ public class VirtualProcess {
         return processChannel.exitValue();
     }
 
+
     public void start() {
-        if (processChannel == null) {
-            processChannel = new VirtualProcessEnvironment();
-        }
+
         processChannel
                 .setCurrentWorkDir(cwd);
         processChannel.putEnvironments(env);

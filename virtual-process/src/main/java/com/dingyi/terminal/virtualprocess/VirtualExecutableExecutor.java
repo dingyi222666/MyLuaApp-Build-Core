@@ -8,7 +8,6 @@ class VirtualExecutableExecutor implements Runnable {
     private final VirtualExecutable mBinary;
     private final VirtualProcess mProcess;
 
-    final CountDownLatch latch = new CountDownLatch(1);
 
     VirtualExecutableExecutor(VirtualExecutable binary, VirtualProcess process) {
         mBinary = binary;
@@ -47,8 +46,7 @@ class VirtualExecutableExecutor implements Runnable {
     }
 
     public void exit(int ret) {
-        mProcess.getProcessEnvironment()
-                .exit(ret);
+
         try {
             mProcess.getProcessEnvironment()
                     .destroy();
@@ -60,7 +58,9 @@ class VirtualExecutableExecutor implements Runnable {
                 .getInstance()
                 .deleteProcessWithThread(Thread.currentThread());
 
-        latch.countDown();
+        mProcess.getProcessEnvironment()
+                .exit(ret);
+
     }
 
 

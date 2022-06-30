@@ -315,14 +315,15 @@ public class NativeServices extends DefaultServiceRegistry implements ServiceReg
                 LOGGER.debug("Unable to load native library. Continuing with fallback. Failure: {}", format(e));
             }
 
-            try {
-                Class.forName("com.dingyi.terminal.virtualprocess.VirtualProcessService", false, getClass().getClassLoader());
-                return new VirtualProcessConsoleDetector();
-            } catch (ClassNotFoundException e) {
-                //ignore
-            }
+
         }
 
+        try {
+            Class.forName("com.dingyi.terminal.virtualprocess.VirtualProcessService", false, getClass().getClassLoader());
+            return new VirtualProcessConsoleDetector();
+        } catch (ClassNotFoundException e) {
+            //ignore
+        }
 
         return new FallbackConsoleDetector();
     }

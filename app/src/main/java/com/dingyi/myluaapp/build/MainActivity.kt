@@ -63,10 +63,6 @@ class MainActivity : AppCompatActivity() {
         viewBinding.terminalView.attachSession(session)
 
 
-        /*  terminalView
-              .mEmulator
-              .append("Hello World".toByteArray(), 0)
-          terminalView.postInvalidate()*/
     }
 
     private fun extractProjectFromApk() {

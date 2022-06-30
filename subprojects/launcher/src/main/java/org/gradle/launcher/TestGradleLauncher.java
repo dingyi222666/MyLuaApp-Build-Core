@@ -129,8 +129,6 @@ public class TestGradleLauncher {
                 .setConsoleOutput(startParameter.getConsoleOutput());
 
         loggingConfiguration
-                .setLogLevel(startParameter.getLogLevel());
-        loggingConfiguration
                 .setWarningMode(startParameter.getWarningMode());
 
         Action<Throwable> reporter = new BuildExceptionReporter(loggingServices.get(StyledTextOutputFactory.class), loggingConfiguration, launcherMetaData)
@@ -151,8 +149,10 @@ public class TestGradleLauncher {
 
         LoggingManagerInternal loggingManager = loggingServices.getFactory(LoggingManagerInternal.class).create();
         loggingManager.setLevelInternal(loggingConfiguration.getLogLevel());
+
         loggingManager.attachConsole(gradleOutputStream, gradleErrorStream, loggingConfiguration.getConsoleOutput(),
                 NativeServices.getInstance().get(ConsoleDetector.class).getConsole());
+
         loggingManager.start();
         try {
             Action<ExecutionListener> exceptionReportingAction =
