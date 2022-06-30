@@ -6,14 +6,14 @@ The project can now run gradle's most basic tasks on android devices, such as `h
 
 ## TODO
  - [ ] Simplify the code of gradle
- - [ ] Refactor virtual process module and fix terminal display error
+ - [x] Refactor virtual process module and fix terminal display error
  - [x] Running groovy scripts in android (See [#1](https://github.com/dingyi222666/GroovyInAndroid))
  - [x] Run gradle help tasks in android
- - [ ] Run gradle java plugin in android
+ - [x] Run gradle java plugin in android
  - [ ] Generate project model for project based on gradle
  - [ ] Reimplement an android gradle plugin for this ported gradle
 
 ## Know Issues
- - [ ] The task build runtime output to terminal from gradle run is not correct
- - [ ] Not support setting the value of the system property `org.gradle.native` to true
+- [x] ~~The task build runtime output to terminal from gradle run is not correct~~
+- [ ] Not support setting the value of the system property `org.gradle.native` to true
 
